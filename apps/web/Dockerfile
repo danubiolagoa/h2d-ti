@@ -1,5 +1,5 @@
 # O contexto de build é a raiz do repositório, porque a imagem inclui infra/Caddyfile.
-FROM node:22-slim AS build
+FROM node:26-slim AS build
 WORKDIR /app
 COPY apps/web/package.json apps/web/package-lock.json ./
 RUN npm ci
