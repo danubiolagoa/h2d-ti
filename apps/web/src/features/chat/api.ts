@@ -5,14 +5,7 @@ export type Citation = components["schemas"]["Citation"];
 export type TicketRef = components["schemas"]["TicketRef"];
 export type ConversationStatus = components["schemas"]["ConversationStatus"];
 
-export type ChatAction =
-  | "answered"
-  | "not_found"
-  | "escalate"
-  | "unavailable"
-  | "limit"
-  | "smalltalk"
-  | "clarify";
+export type ChatAction = NonNullable<components["schemas"]["MessageOut"]["action"]>;
 
 export type FlowStatus = "ok" | "warn" | "fail" | "skip";
 
@@ -100,9 +93,9 @@ export async function sendMessage(
   let buffer = "";
   let finished = false;
   for (;;) {
-    const { value, done } = await reader.read();
-    if (done) break;
-    buffer += decoder.decode(value, { stream: true });
+    const chunk = await reader.read().catch(() => null);
+    if (!chunk || chunk.done) break;
+    buffer += decoder.decode(chunk.value, { stream: true });
     let end = buffer.indexOf("\n\n");
     while (end !== -1) {
       const parsed = parseEvent(buffer.slice(0, end));
@@ -123,8 +116,9 @@ export async function sendMessage(
       }
     }
   }
+  reader.releaseLock();
   if (!finished) {
-    handlers.onError("A conexão com o assistente foi encerrada antes da resposta concluir. Tente novamente.");
+    handlers.onError("A conexão com o assistente foi encerrada antes de a resposta terminar. Tente novamente.");
   }
 }
 

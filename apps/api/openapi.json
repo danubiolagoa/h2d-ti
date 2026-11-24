@@ -1628,6 +1628,26 @@
       },
       "MessageOut": {
         "properties": {
+          "action": {
+            "anyOf": [
+              {
+                "enum": [
+                  "answered",
+                  "clarify",
+                  "not_found",
+                  "escalate",
+                  "unavailable",
+                  "limit",
+                  "smalltalk"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Action"
+          },
           "citations": {
             "items": {
               "$ref": "#/components/schemas/Citation"
@@ -1675,6 +1695,7 @@
           "content",
           "redactions",
           "citations",
+          "action",
           "feedback",
           "created_at"
         ],

@@ -189,6 +189,7 @@ export function ChatPage() {
         role: m.role === "user" ? "user" : "assistant",
         content: m.content,
         citations: m.citations,
+        action: m.action ?? undefined,
         feedback: m.feedback === 1 || m.feedback === -1 ? m.feedback : undefined,
       }));
       setConversationId(detail.id);

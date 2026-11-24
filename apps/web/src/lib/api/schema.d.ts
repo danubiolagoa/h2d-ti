@@ -1452,6 +1452,8 @@ export interface components {
         };
         /** MessageOut */
         MessageOut: {
+            /** Action */
+            action: ("answered" | "clarify" | "not_found" | "escalate" | "unavailable" | "limit" | "smalltalk") | null;
             /** Citations */
             citations: components["schemas"]["Citation"][];
             /** Content */

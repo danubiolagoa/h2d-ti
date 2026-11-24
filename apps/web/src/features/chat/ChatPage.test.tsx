@@ -13,6 +13,19 @@ const USER = {
   department: "TI",
 };
 
+const CONVERSATION = {
+  id: "0190a000-0000-7000-8000-000000000099",
+  title: "Acesso à VPN",
+  status: "open",
+  created_at: "2026-11-18T11:00:00Z",
+  updated_at: "2026-11-18T11:00:00Z",
+};
+
+function requestPath(input: RequestInfo | URL) {
+  const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+  return new URL(url, "http://localhost").pathname;
+}
+
 function sseStream(events: Array<{ event: string; data: unknown }>) {
   const payload = events
     .map((e) => `event: ${e.event}\ndata: ${JSON.stringify(e.data)}\n\n`)
@@ -47,11 +60,74 @@ describe("ChatPage", () => {
     vi.unstubAllGlobals();
   });
 
+  it("restaura as ações das respostas ao recuperar o histórico do servidor", async () => {
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
+      switch (requestPath(input)) {
+        case "/api/auth/me":
+          return Response.json(USER);
+        case "/api/chat/conversations":
+          return Response.json([CONVERSATION]);
+        case `/api/chat/conversations/${CONVERSATION.id}`:
+          return Response.json({
+            ...CONVERSATION,
+            messages: [
+              { id: "1", role: "assistant", content: "Confira as configurações da VPN.", action: "answered", feedback: 1, citations: [] },
+              { id: "2", role: "assistant", content: "Não encontrei essa informação.", action: "not_found", feedback: null, citations: [] },
+              { id: "3", role: "assistant", content: "Bem-vinda!", action: null, feedback: null, citations: [] },
+            ],
+            ticket: null,
+          });
+        default:
+          return new Response(null, { status: 404 });
+      }
+    }));
+
+    renderChat();
+
+    expect((await screen.findByRole("button", { name: "Resposta útil" })).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("button", { name: "Resolvido" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Abrir um chamado" })).toBeTruthy();
+    expect(screen.getByText("Bem-vinda!")).toBeTruthy();
+  });
+
+  it("libera o envio de outra mensagem quando a conexão cai durante a resposta", async () => {
+    const user = userEvent.setup();
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
+      switch (requestPath(input)) {
+        case "/api/auth/me":
+          return Response.json(USER);
+        case "/api/chat/conversations":
+          return Response.json(input instanceof Request && input.method === "POST" ? CONVERSATION : []);
+        case `/api/chat/conversations/${CONVERSATION.id}/messages`:
+          return new Response(new ReadableStream({
+            start(controller) {
+              controller.enqueue(new TextEncoder().encode('event: token\ndata: {"text":"Resposta parcial"}\n\n'));
+            },
+            pull(controller) {
+              controller.error(new TypeError("connection lost"));
+            },
+          }));
+        default:
+          return new Response(null, { status: 404 });
+      }
+    }));
+
+    renderChat();
+    const input = screen.getByRole("textbox", { name: "Sua mensagem" });
+    const send = screen.getByRole<HTMLButtonElement>("button", { name: "Enviar" });
+    await user.type(input, "Preciso de ajuda com a VPN");
+    await user.click(send);
+
+    expect((await screen.findByRole("alert")).textContent).toMatch(/conexão.*encerrada/i);
+    expect(screen.queryByText("Resposta parcial")).toBeNull();
+    await user.type(input, "Vou enviar outra mensagem");
+    expect(send.disabled).toBe(false);
+  });
+
   it("mantém o histórico da conversa e o painel de agentes ao desmontar e voltar para a tela", async () => {
-    const convId = "0190a000-0000-7000-8000-000000000099";
+    const convId = CONVERSATION.id;
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
-      const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
-      const pathname = new URL(url, "http://localhost").pathname;
+      const pathname = requestPath(input);
 
       if (pathname === "/api/auth/me") {
         return new Response(JSON.stringify(USER), {

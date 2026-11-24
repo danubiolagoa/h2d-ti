@@ -11,7 +11,7 @@ import uuid
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
-from typing import Any, Literal
+from typing import Any
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -48,6 +48,7 @@ from h2d.llm.client import (
     OpenRouterClient,
 )
 from h2d.models import (
+    ChatAction,
     Conversation,
     ConversationStatus,
     LlmCall,
@@ -58,9 +59,6 @@ from h2d.models import (
     User,
 )
 
-Action = Literal[
-    "answered", "clarify", "not_found", "escalate", "unavailable", "limit", "smalltalk"
-]
 HISTORY_MESSAGES = 6
 ANSWER_MAX_TOKENS = 2500  # modelos que "pensam" gastam o limite no raciocínio e cortam a resposta
 SEARCH_LIMIT = 8  # trechos têm ~60 palavras: 5 deixavam o modelo sem contexto para perguntas amplas
@@ -206,7 +204,7 @@ class ChatLimitError(Exception):
 
 @dataclass
 class TurnResult:
-    action: Action
+    action: ChatAction
     message: Message
     citations: list[dict[str, Any]] = field(default_factory=list)
     reason: str | None = None
@@ -431,7 +429,7 @@ async def handle_user_message(
     )
 
     async def reply(
-        action: Action,
+        action: ChatAction,
         body: str,
         *,
         citations: list[dict[str, Any]] | None = None,
@@ -569,7 +567,7 @@ async def handle_user_message(
         situation: str,
         fallback: str,
         reason: str,
-        action: Action,
+        action: ChatAction,
         *,
         prompt_version: PromptVersion | None = None,
     ) -> TurnResult:

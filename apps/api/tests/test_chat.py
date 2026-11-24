@@ -136,6 +136,7 @@ async def test_resposta_com_fonte_chega_em_sse_e_fica_registrada(
 
     history = (await client.get(f"/api/chat/conversations/{conversation_id}")).json()
     assert [m["role"] for m in history["messages"]] == ["user", "assistant"]
+    assert [m["action"] for m in history["messages"]] == [None, "answered"]
     assert history["messages"][1]["citations"][0]["title"] == "VPN corporativa"
 
     calls = list(await session.scalars(select(LlmCall).order_by(LlmCall.created_at)))

@@ -3,7 +3,7 @@
 import uuid
 from datetime import datetime
 from enum import StrEnum
-from typing import Any
+from typing import Any, Literal
 
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import (
@@ -349,6 +349,11 @@ class MessageRole(StrEnum):
     ASSISTANT = "assistant"
 
 
+ChatAction = Literal[
+    "answered", "clarify", "not_found", "escalate", "unavailable", "limit", "smalltalk"
+]
+
+
 class PromptVersion(Base):
     """Cada versão de prompt fica gravada; a resposta guarda qual versão a gerou."""
 
@@ -414,7 +419,7 @@ class Message(Base):
     )
     # Desfecho do turno ("answered", "clarify", "not_found"...): o chat só oferece o chamado depois
     # de ter pedido detalhes uma vez.
-    action: Mapped[str | None] = mapped_column(String(20))
+    action: Mapped[ChatAction | None] = mapped_column(String(20))
     # 1 = útil, -1 = não ajudou.
     feedback: Mapped[int | None] = mapped_column(SmallInteger)
     prompt_version_id: Mapped[uuid.UUID | None] = mapped_column(

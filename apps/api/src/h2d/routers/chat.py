@@ -24,7 +24,7 @@ from h2d.deps import CurrentUser, SessionDep
 from h2d.escritorio.events import emit_agent_event
 from h2d.kb.embeddings import Embedder, get_embedder
 from h2d.llm.client import LLM, get_llm
-from h2d.models import Conversation, ConversationStatus, Message, Role, Ticket
+from h2d.models import ChatAction, Conversation, ConversationStatus, Message, Role, Ticket
 from h2d.tickets.service import create_ticket_from_conversation
 
 router = APIRouter(prefix="/chat", tags=["chat"])
@@ -56,6 +56,7 @@ class MessageOut(BaseModel):
     content: str
     redactions: int
     citations: list[Citation]
+    action: ChatAction | None
     feedback: int | None
     created_at: datetime
 
@@ -94,6 +95,7 @@ def _message_out(message: Message) -> MessageOut:
         content=message.content,
         redactions=message.redactions,
         citations=[Citation(**c) for c in message.citations],
+        action=message.action,
         feedback=message.feedback,
         created_at=message.created_at,
     )
