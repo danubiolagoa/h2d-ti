@@ -189,7 +189,7 @@ interface OverlayProps {
 function OverlayHeader({ title, description }: Pick<OverlayProps, "title" | "description">) {
   return (
     <div className="flex items-start justify-between gap-3 border-b border-border px-5 py-4">
-      <div className="min-w-0">
+      <div className="min-w-0 wrap-anywhere">
         <RadixDialog.Title className="text-base font-semibold">{title}</RadixDialog.Title>
         <RadixDialog.Description className={description ? "text-sm text-muted" : "sr-only"}>
           {description ?? "Detalhes"}

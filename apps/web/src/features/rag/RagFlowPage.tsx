@@ -163,11 +163,11 @@ function Lane({
   onSelect: (key: StepKey) => void;
 }) {
   return (
-    <div className="grid items-center gap-x-3 gap-y-1 lg:grid-cols-[5.5rem_1fr]">
+    <div className="grid items-center gap-x-3 gap-y-1 lg:grid-cols-[5.5rem_minmax(0,1fr)]">
       <h3 className="text-xs font-medium tracking-wide text-muted uppercase">{title}</h3>
-      <div className="flex flex-wrap items-stretch gap-x-3 gap-y-3 lg:flex-nowrap">
+      <div className="flex flex-wrap items-stretch gap-3">
         {steps.map((step, index) => (
-          <div key={step.key} className="flex min-w-[6.5rem] flex-1 items-stretch lg:min-w-0">
+          <div key={step.key} className="flex min-w-[6.5rem] flex-1 items-stretch">
             <StepNode
               step={step}
               active={selected === step.key}

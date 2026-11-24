@@ -4,7 +4,7 @@ import { MessageCircle } from "lucide-react";
 import { useState } from "react";
 
 import { PageHeader } from "@/components/PageHeader";
-import { Button } from "@/components/ui/button";
+import { buttonClassName } from "@/components/ui/button";
 import { type Column, DataTable } from "@/components/ui/data-table";
 import { Card } from "@/components/ui/primitives";
 
@@ -47,11 +47,9 @@ export function MyTicketsPage() {
         title="Meus chamados"
         description="Acompanhe o andamento dos chamados que você abriu."
         actions={
-          <Link to="/chat">
-            <Button variant="primary">
-              <MessageCircle aria-hidden className="size-4" />
-              Abrir pelo assistente
-            </Button>
+          <Link to="/chat" className={buttonClassName("primary")}>
+            <MessageCircle aria-hidden className="size-4" />
+            Abrir pelo assistente
           </Link>
         }
       />

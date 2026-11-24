@@ -334,10 +334,10 @@ function Breadcrumb() {
   if (!current) return null;
 
   return (
-    <nav aria-label="Você está em" className="hidden items-center gap-1.5 text-sm md:flex">
-      <span className="text-muted">{current.group}</span>
-      <ChevronRight aria-hidden className="size-4 text-muted" />
-      <span className="font-medium">{current.title}</span>
+    <nav aria-label="Você está em" className="hidden min-w-0 items-center gap-1.5 text-sm md:flex">
+      <span className="shrink-0 text-muted">{current.group}</span>
+      <ChevronRight aria-hidden className="size-4 shrink-0 text-muted" />
+      <span className="truncate font-medium" title={current.title}>{current.title}</span>
     </nav>
   );
 }
@@ -425,7 +425,7 @@ export function AppShell({ user }: { user: User }) {
               type="button"
               onClick={() => setSearchOpen(true)}
               aria-label="Buscar no sistema"
-              className="flex h-10 cursor-pointer items-center gap-2 rounded-lg px-2.5 text-muted hover:bg-surface-2 sm:border sm:border-border sm:bg-bg sm:pr-2 sm:hover:border-muted lg:w-64"
+              className="flex h-10 cursor-pointer items-center gap-2 rounded-lg px-2.5 text-muted hover:bg-surface-2 sm:border sm:border-border sm:bg-bg sm:pr-2 sm:hover:border-muted lg:w-40 2xl:w-64"
             >
               <Search aria-hidden className="size-[18px] shrink-0" />
               <span className="hidden flex-1 text-left text-sm lg:block">Buscar...</span>

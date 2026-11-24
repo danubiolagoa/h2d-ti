@@ -70,7 +70,7 @@ export function SetPasswordPage() {
         ) : (
           <>
             <h1 className="text-2xl font-semibold tracking-tight">Defina sua senha</h1>
-            <p className="mt-1 mb-6 text-muted">
+            <p className="mt-1 mb-6 wrap-anywhere text-muted">
               Olá, {invite.data?.name}. Escolha a senha para entrar com {invite.data?.email}.
             </p>
             <form onSubmit={submit} noValidate className="space-y-4">

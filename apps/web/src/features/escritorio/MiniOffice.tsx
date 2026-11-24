@@ -174,7 +174,7 @@ export function MiniOffice({ onOpenFull }: { onOpenFull: () => void }) {
         type="button"
         onClick={() => setMode("open")}
         aria-label={`Abrir o mini-escritório${roomName ? `. Sala ativa: ${roomName}` : ""}`}
-        className="fixed right-4 bottom-4 z-40 inline-flex h-10 cursor-pointer items-center gap-2 rounded-full border border-border bg-surface px-3.5 text-sm font-medium shadow-lg hover:bg-surface-2"
+        className="fixed right-4 bottom-4 z-40 hidden h-10 cursor-pointer items-center gap-2 rounded-full border border-border bg-surface px-3.5 text-sm font-medium shadow-lg hover:bg-surface-2 md:inline-flex"
       >
         <Building2 aria-hidden className="size-4" />
         Escritório

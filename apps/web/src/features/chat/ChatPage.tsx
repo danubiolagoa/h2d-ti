@@ -390,7 +390,7 @@ export function ChatPage() {
             {messages.map((message) =>
               message.role === "user" ? (
                 <li key={message.key} className="flex justify-end">
-                  <p className="max-w-[90%] rounded-2xl sm:max-w-[80%] rounded-br-sm bg-accent px-4 py-2.5 whitespace-pre-wrap text-accent-fg">
+                  <p className="min-w-0 max-w-[90%] rounded-2xl sm:max-w-[80%] rounded-br-sm bg-accent px-4 py-2.5 wrap-anywhere whitespace-pre-wrap text-accent-fg">
                     {message.content}
                   </p>
                 </li>

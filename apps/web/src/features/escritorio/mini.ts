@@ -17,9 +17,9 @@ let widthMemory: number | null = null;
 function readMode(): MiniMode {
   try {
     const value = localStorage.getItem(MODE_KEY);
-    return value === "min" || value === "off" ? value : "open";
+    return value === "open" || value === "off" ? value : "min";
   } catch {
-    return "open";
+    return "min";
   }
 }
 
@@ -81,7 +81,7 @@ export function setMiniWidth(width: number, persist = true) {
 }
 
 export function useMiniMode(): [MiniMode, (mode: MiniMode) => void] {
-  const mode = useSyncExternalStore(subscribe, () => modeMemory ?? readMode(), () => "open" as MiniMode);
+  const mode = useSyncExternalStore(subscribe, () => modeMemory ?? readMode(), () => "min" as MiniMode);
   return [mode, setMiniMode];
 }
 

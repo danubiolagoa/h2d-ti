@@ -85,6 +85,17 @@ afterEach(() => {
 });
 
 describe("MiniOffice", () => {
+  it("começa minimizado quando não há preferência salva", () => {
+    renderMini();
+    act(() => {
+      localStorage.removeItem("h2d-escritorio-mini");
+      window.dispatchEvent(new StorageEvent("storage", { key: "h2d-escritorio-mini" }));
+    });
+
+    expect(screen.queryByRole("region", { name: "Mini-escritório" })).toBeNull();
+    expect(screen.getByRole("button", { name: /Abrir o mini-escritório/ })).toBeTruthy();
+  });
+
   it("aberto, mostra a cena parada e a dica enquanto não há atividade", async () => {
     renderMini();
 

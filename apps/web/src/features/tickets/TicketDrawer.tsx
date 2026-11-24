@@ -139,7 +139,7 @@ function Detail({ ticket }: { ticket: TicketDetail }) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 wrap-anywhere">
       <div className="flex flex-wrap items-center gap-2">
         <StatusBadge status={ticket.status} />
         <PriorityBadge priority={ticket.priority} />

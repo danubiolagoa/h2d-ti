@@ -53,7 +53,7 @@ const HIGHLIGHTS = [
 
 function BrandPanel() {
   return (
-    <aside className="hidden w-[44%] max-w-[640px] flex-col justify-between bg-sidebar p-12 text-sidebar-text lg:flex">
+    <aside className="hidden w-[44%] max-w-[640px] flex-col justify-between gap-8 bg-sidebar p-12 text-sidebar-text lg:flex">
       <div className="text-white">
         <Logo subtitle />
       </div>
@@ -107,9 +107,9 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex h-dvh">
+    <div className="flex min-h-dvh">
       <BrandPanel />
-      <main className="relative flex flex-1 items-center justify-center overflow-y-auto p-6">
+      <main className="relative flex min-w-0 flex-1 items-center justify-center p-6">
         <div className="absolute top-4 right-4">
           <ThemeToggle />
         </div>

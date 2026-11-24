@@ -84,6 +84,15 @@ export function DataTable<T>({
     onSelectedChange?.(next);
   }
 
+  if (sorted.length === 0) {
+    return (
+      <div role="status" className="px-4 py-14 text-center text-sm text-muted">
+        <Inbox aria-hidden className="mx-auto mb-2 size-7" />
+        <p>{empty}</p>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="overflow-x-auto">
@@ -172,14 +181,6 @@ export function DataTable<T>({
                 </tr>
               );
             })}
-            {visible.length === 0 && (
-              <tr className="border-t border-border">
-                <td colSpan={columns.length + (selectable ? 1 : 0)} className="py-14 text-center">
-                  <Inbox aria-hidden className="mx-auto mb-2 size-7 text-muted" />
-                  <p className="text-muted">{empty}</p>
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
       </div>

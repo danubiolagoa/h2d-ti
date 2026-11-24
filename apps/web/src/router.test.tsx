@@ -38,6 +38,7 @@ function mockApi(initial: User | null, loginStatus = 200, loginUser?: User) {
       return new Response(null, { status: 204 });
     }
     if (pathname === "/api/health") return json({ status: "ok", version: "0.1.0" });
+    if (pathname === "/api/tickets") return json([]);
     return json({ detail: "não encontrado" }, 404);
   });
   vi.stubGlobal("fetch", fetchMock);
@@ -182,5 +183,27 @@ describe("login", () => {
 
     await waitFor(() => expect(router.state.location.pathname).toBe("/login"));
     expect(await screen.findByLabelText("Senha")).toBeTruthy();
+  });
+});
+
+describe("meus chamados", () => {
+  it("mostra o aviso de lista vazia fora da tabela rolável", async () => {
+    mockApi(asRole("user"));
+    await renderAt("/meus-chamados");
+
+    const empty = await screen.findByText(/Você ainda não abriu chamados/);
+    expect(empty.closest("table")).toBeNull();
+  });
+
+  it("abre o assistente com um único controle de navegação", async () => {
+    mockApi(asRole("user"));
+    const router = await renderAt("/meus-chamados");
+    const user = userEvent.setup();
+
+    const link = await screen.findByRole("link", { name: "Abrir pelo assistente" });
+    expect(link.querySelector("button")).toBeNull();
+    link.focus();
+    await user.keyboard("{Enter}");
+    await waitFor(() => expect(router.state.location.pathname).toBe("/chat"));
   });
 });

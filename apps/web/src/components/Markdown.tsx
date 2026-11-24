@@ -74,7 +74,7 @@ const COMPONENTS: Components = {
 
 export function Markdown({ children, className }: { children: string; className?: string }) {
   return (
-    <div className={className}>
+    <div className={cn("min-w-0 wrap-anywhere", className)}>
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={COMPONENTS}>
         {children}
       </ReactMarkdown>
