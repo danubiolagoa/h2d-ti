@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createMemoryHistory, RouterProvider } from "@tanstack/react-router";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -120,6 +120,51 @@ describe("proteção de rotas", () => {
     const router = await renderAt("/login?redirect=//evil.example");
 
     await waitFor(() => expect(router.state.location.pathname).toBe("/chat"));
+  });
+});
+
+describe("menu móvel", () => {
+  function mockDesktopViewport() {
+    const viewport = Object.assign(new EventTarget(), { matches: false });
+    vi.stubGlobal("matchMedia", vi.fn(() => viewport));
+    return viewport;
+  }
+
+  it("fecha pelo botão interno e devolve o foco ao botão que abriu o menu", async () => {
+    mockApi(asRole("user"));
+    mockDesktopViewport();
+    await renderAt("/chat");
+    const user = userEvent.setup();
+    const trigger = await screen.findByRole("button", { name: "Abrir menu" });
+
+    await user.click(trigger);
+    const menu = screen.getByRole("dialog", { name: "Menu" });
+    await user.click(within(menu).getByRole("button", { name: "Fechar menu" }));
+
+    expect(screen.queryByRole("dialog", { name: "Menu" })).toBeNull();
+    await waitFor(() => expect(document.activeElement).toBe(trigger));
+  });
+
+  it("fecha ao passar para o layout de desktop e não reabre ao voltar para o móvel", async () => {
+    mockApi(asRole("user"));
+    const viewport = mockDesktopViewport();
+    await renderAt("/chat");
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole("button", { name: "Abrir menu" }));
+    expect(screen.getByRole("dialog", { name: "Menu" })).toBeTruthy();
+
+    act(() => {
+      viewport.matches = true;
+      viewport.dispatchEvent(new Event("change"));
+    });
+    expect(screen.queryByRole("dialog", { name: "Menu" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Recolher menu" })).toBeTruthy();
+
+    act(() => {
+      viewport.matches = false;
+      viewport.dispatchEvent(new Event("change"));
+    });
+    expect(screen.queryByRole("dialog", { name: "Menu" })).toBeNull();
   });
 });
 

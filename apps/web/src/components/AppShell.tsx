@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
-import { Bell, ChevronRight, LogOut, Menu, PanelLeftClose, PanelLeftOpen, Search } from "lucide-react";
+import { Bell, ChevronRight, LogOut, Menu, PanelLeftClose, PanelLeftOpen, Search, X } from "lucide-react";
 import { Dialog, DropdownMenu } from "radix-ui";
 import { useEffect, useState } from "react";
 
@@ -162,6 +162,19 @@ function Sidebar({ role }: { role: Role }) {
 
 function MobileMenu({ role }: { role: Role }) {
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    // Mesmo breakpoint lg que exibe a barra lateral e oculta o botão móvel.
+    const desktop = window.matchMedia("(min-width: 64rem)");
+    function closeOnDesktop() {
+      if (desktop.matches) setOpen(false);
+    }
+    closeOnDesktop();
+    desktop.addEventListener("change", closeOnDesktop);
+    return () => desktop.removeEventListener("change", closeOnDesktop);
+  }, [open]);
+
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
@@ -174,8 +187,16 @@ function MobileMenu({ role }: { role: Role }) {
         <Dialog.Content className="fixed inset-y-0 left-0 z-50 flex w-72 max-w-[85vw] flex-col bg-sidebar text-sidebar-text">
           <Dialog.Title className="sr-only">Menu</Dialog.Title>
           <Dialog.Description className="sr-only">Módulos do sistema</Dialog.Description>
-          <div className="flex h-16 items-center px-5 text-white">
+          <div className="flex h-16 shrink-0 items-center justify-between gap-2 pl-5 pr-3 text-white">
             <Logo subtitle />
+            <Dialog.Close asChild>
+              <Button
+                aria-label="Fechar menu"
+                className="size-11 shrink-0 px-0 text-sidebar-text hover:bg-sidebar-hover hover:text-white focus-visible:outline-sidebar-accent"
+              >
+                <X aria-hidden className="size-5" />
+              </Button>
+            </Dialog.Close>
           </div>
           <SidebarNav role={role} onNavigate={() => setOpen(false)} />
         </Dialog.Content>
